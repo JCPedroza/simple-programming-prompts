@@ -1,33 +1,46 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
 
+const (
+	errorSize = "Expected two arguments"
+	errorType = "Expected types: arg1 char, arg2 int"
+	errorSpec = "CAN'T"
+	fmtOut = "%s%s%s\n"
+	padChar = "*"
+)
+
 func main() {
-	fmt.Println("c = ")
-	c, _ := fmt.Scan()
-	fmt.Println("l = ")
-	lin, _ := reader.ReadString('\n')
-	l, lerr := strconv.ParseInt(lin, 10, 32)
-
-	if (lerr != nil) {
-		fmt.Println(lerr)
+	mid, size, err := parseInput()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
-    ans := ""
-
-	if l % 2 != 0 && l > 2 {
-		pad := strings.Repeat("*", int(l) / 2)
-		ans = pad + c + pad
+	if size % 2 == 0 || size < 3 {
+		fmt.Println(errorSpec)
 	} else {
-		ans = "CAN'T"
+		pad := strings.Repeat(padChar, size / 2)
+		fmt.Printf(fmtOut, pad, mid, pad)
+	}
+}
+
+func parseInput() (string, int, error) {
+	if len(os.Args) != 3 {
+		return "", 0, errors.New(errorSize)
 	}
 
-	fmt.Println(ans)
-	fmt.Println(c)
-	fmt.Println(l)
-	fmt.Println(lin)
+	mid := os.Args[1]
+	size, err := strconv.Atoi(os.Args[2])
+	if len(mid) != 1 || err != nil {
+		return "", 0, errors.New(errorType)
+	}
+
+	return mid, size, nil
 }
